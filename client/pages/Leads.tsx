@@ -21,8 +21,10 @@ function useDebounced<T>(value: T, delay = 300) {
 }
 
 export default function LeadsPage() {
-  const [q, setQ] = useState("");
-  const [status, setStatus] = useState<LeadStatus | "all">("all");
+  // Persist filters in Zustand so they survive navigation
+  const { leads } = require("@/store/ui");
+  const [q, setQ] = useState<string>(leads.q);
+  const [status, setStatus] = useState<LeadStatus | "all">(leads.status);
   const debouncedQ = useDebounced(q, 400);
   const queryClient = useQueryClient();
 
