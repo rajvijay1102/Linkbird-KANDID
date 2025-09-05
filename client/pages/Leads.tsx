@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { Lead, LeadStatus, PaginatedResponse } from "@shared/api";
 import AppLayout from "@/layouts/AppLayout";
+import { useUIStore } from "@/store/ui";
 
 function useDebounced<T>(value: T, delay = 300) {
   const [v, setV] = useState(value);
@@ -22,9 +23,11 @@ function useDebounced<T>(value: T, delay = 300) {
 
 export default function LeadsPage() {
   // Persist filters in Zustand so they survive navigation
-  const { leads } = require("@/store/ui");
-  const [q, setQ] = useState<string>(leads.q);
-  const [status, setStatus] = useState<LeadStatus | "all">(leads.status);
+  const { q: qStore, status: statusStore, setQ: setQStore, setStatus: setStatusStore } = useUIStore((s) => s.leads);
+  const [q, setQ] = useState<string>(qStore);
+  const [status, setStatus] = useState<LeadStatus | "all">(statusStore);
+  useEffect(() => setQStore(q), [q, setQStore]);
+  useEffect(() => setStatusStore(status), [status, setStatusStore]);
   const debouncedQ = useDebounced(q, 400);
   const queryClient = useQueryClient();
 
