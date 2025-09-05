@@ -21,5 +21,14 @@ export function createServer() {
 
   app.get("/api/demo", handleDemo);
 
+  // Leads endpoints
+  app.get("/api/leads", getLeads);
+  app.get("/api/leads/:id", getLeadById);
+  app.post("/api/leads/:id/status", updateLeadStatus);
+
+  // Campaigns endpoints
+  app.get("/api/campaigns", getCampaigns);
+  app.get("/api/campaigns/:id", getCampaignById);
+
   return app;
 }
