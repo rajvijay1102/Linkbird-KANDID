@@ -1,62 +1,83 @@
-import { DemoResponse } from "@shared/api";
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
+import { Link } from "react-router-dom";
+import AppLayout from "@/layouts/AppLayout";
 
 export default function Index() {
-  const [exampleFromServer, setExampleFromServer] = useState("");
-  // Fetch users on component mount
-  useEffect(() => {
-    fetchDemo();
-  }, []);
+  const { data: campaigns } = useQuery({
+    queryKey: ["campaigns:overview"],
+    queryFn: async () => {
+      const res = await fetch("/api/campaigns?page=1&limit=10");
+      const json = await res.json();
+      return json.items as Array<{ sent: number; opened: number; replied: number; leads: number }>;
+    },
+  });
 
-  // Example of how to fetch data from the server (if needed)
-  const fetchDemo = async () => {
-    try {
-      const response = await fetch("/api/demo");
-      const data = (await response.json()) as DemoResponse;
-      setExampleFromServer(data.message);
-    } catch (error) {
-      console.error("Error fetching hello:", error);
-    }
-  };
+  const sent = campaigns?.reduce((s, c) => s + c.sent, 0) ?? 0;
+  const opened = campaigns?.reduce((s, c) => s + c.opened, 0) ?? 0;
+  const replied = campaigns?.reduce((s, c) => s + c.replied, 0) ?? 0;
+  const leads = campaigns?.reduce((s, c) => s + c.leads, 0) ?? 0;
+  const openRate = sent ? Math.round((opened / sent) * 100) : 0;
+  const replyRate = opened ? Math.round((replied / opened) * 100) : 0;
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200">
-      <div className="text-center">
-        {/* TODO: FUSION_GENERATION_APP_PLACEHOLDER replace everything here with the actual app! */}
-        <h1 className="text-2xl font-semibold text-slate-800 flex items-center justify-center gap-3">
-          <svg
-            className="animate-spin h-8 w-8 text-slate-400"
-            viewBox="0 0 50 50"
-          >
-            <circle
-              className="opacity-30"
-              cx="25"
-              cy="25"
-              r="20"
-              stroke="currentColor"
-              strokeWidth="5"
-              fill="none"
-            />
-            <circle
-              className="text-slate-600"
-              cx="25"
-              cy="25"
-              r="20"
-              stroke="currentColor"
-              strokeWidth="5"
-              fill="none"
-              strokeDasharray="100"
-              strokeDashoffset="75"
-            />
-          </svg>
-          Generating your app...
-        </h1>
-        <p className="mt-4 text-slate-600 max-w-md">
-          Watch the chat on the left for updates that might need your attention
-          to finish generating
-        </p>
-        <p className="mt-4 hidden max-w-md">{exampleFromServer}</p>
+    <AppLayout>
+      <div className="space-y-8">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Linkbird.ai Replica</h1>
+          <p className="text-muted-foreground">Leads management and Campaign analytics experience.</p>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <Card>
+            <CardHeader className="pb-2"><CardTitle>Total Leads</CardTitle></CardHeader>
+            <CardContent className="text-2xl font-bold">{leads.toLocaleString()}</CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="pb-2"><CardTitle>Sent</CardTitle></CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{sent.toLocaleString()}</div>
+              <Progress value={sent ? 100 : 0} className="mt-2" />
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="pb-2"><CardTitle>Open Rate</CardTitle></CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{openRate}%</div>
+              <Progress value={openRate} className="mt-2" />
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="pb-2"><CardTitle>Reply Rate</CardTitle></CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{replyRate}%</div>
+              <Progress value={replyRate} className="mt-2" />
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Card>
+            <CardHeader>
+              <CardTitle>Leads</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <p className="text-sm text-muted-foreground">Search, filter and review lead details with an infinite table and side sheet.</p>
+              <Button asChild><Link to="/leads">Open Leads</Link></Button>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>Campaigns</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <p className="text-sm text-muted-foreground">Track campaign performance with sortable table and KPIs.</p>
+              <Button variant="secondary" asChild><Link to="/campaigns">Open Campaigns</Link></Button>
+            </CardContent>
+          </Card>
+        </div>
       </div>
-    </div>
+    </AppLayout>
   );
 }
