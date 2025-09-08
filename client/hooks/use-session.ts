@@ -19,11 +19,11 @@ export function useSession() {
   });
 
   const signInWithGoogle = () => {
-    window.location.href = "/api/auth/signin/google";
+    window.location.href = "/api/auth/sign-in/google";
   };
 
   const signOut = async () => {
-    await fetch("/api/auth/signout", { method: "POST", credentials: "include" });
+    await fetch("/api/auth/sign-out", { method: "POST", credentials: "include" });
     await qc.invalidateQueries({ queryKey: ["session"] });
   };
 
