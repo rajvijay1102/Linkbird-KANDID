@@ -4,20 +4,23 @@ import cors from "cors";
 import { handleDemo } from "./routes/demo";
 import { getLeads, getLeadById, updateLeadStatus } from "./routes/leads";
 import { getCampaigns, getCampaignById } from "./routes/campaigns";
-import { authRouter } from "./auth";
+import { auth } from "./auth";
+import { toNodeHandler } from "better-auth/node";
 import { seedIfEmpty } from "./db/seed";
 import { isDbEnabled } from "./db/client";
 
 export function createServer() {
   const app = express();
 
-  // Middleware
+  // CORS first
   app.use(cors());
+
+  // Better Auth catch-all, mounted before JSON body parser
+  app.all("/api/auth/*", toNodeHandler(auth));
+
+  // Standard body parsers
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
-
-  // Auth routes
-  app.use("/api/auth", authRouter);
 
   // Example API routes
   app.get("/api/ping", (_req, res) => {
