@@ -5,6 +5,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useLocation, Link } from "react-router-dom";
 import { toast } from "sonner";
+import { useSession } from "@/hooks/use-session";
 
 function useCrumbs() {
   const { pathname } = useLocation();
@@ -19,6 +20,9 @@ function useCrumbs() {
 
 export function AppHeader() {
   const crumbs = useCrumbs();
+  const { user, signInWithGoogle, signOut } = useSession();
+  const initials = (user?.name || user?.email || "U").slice(0, 1).toUpperCase();
+
   return (
     <header className="sticky top-0 z-20 border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="flex h-14 items-center gap-3 px-4">
@@ -50,15 +54,26 @@ export function AppHeader() {
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="gap-3">
                 <Avatar className="size-6">
-                  <AvatarFallback>U</AvatarFallback>
+                  <AvatarFallback>{initials}</AvatarFallback>
                 </Avatar>
-                <span className="hidden sm:inline">User</span>
+                <span className="hidden sm:inline">{user?.name || user?.email || "Guest"}</span>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Account</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => toast.success("Logged out")}>Logout</DropdownMenuItem>
+              {user ? (
+                <DropdownMenuItem
+                  onClick={async () => {
+                    await signOut();
+                    toast.success("Logged out");
+                  }}
+                >
+                  Logout
+                </DropdownMenuItem>
+              ) : (
+                <DropdownMenuItem onClick={signInWithGoogle}>Sign in with Google</DropdownMenuItem>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
