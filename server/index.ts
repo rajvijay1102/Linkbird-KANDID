@@ -15,14 +15,11 @@ export function createServer() {
   // CORS first
   app.use(cors());
 
-  // Better Auth handler mounted at /api/auth (handles all subpaths)
-  app.use("/api/auth", toNodeHandler(auth));
-
   // Standard body parsers
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 
-  // Session endpoint (explicit)
+  // Session endpoint (explicit) before mounting Better Auth
   app.get("/api/auth/session", async (req, res) => {
     try {
       const session = await auth.api.getSession({ headers: fromNodeHeaders(req.headers) });
@@ -31,6 +28,9 @@ export function createServer() {
       return res.json({ user: null });
     }
   });
+
+  // Better Auth handler mounted at /api/auth (handles all subpaths)
+  app.use("/api/auth", toNodeHandler(auth));
 
   // Example API routes
   app.get("/api/ping", (_req, res) => {
