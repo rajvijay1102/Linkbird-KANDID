@@ -5,7 +5,7 @@ import { handleDemo } from "./routes/demo";
 import { getLeads, getLeadById, updateLeadStatus } from "./routes/leads";
 import { getCampaigns, getCampaignById } from "./routes/campaigns";
 import { auth } from "./auth";
-import { toNodeHandler } from "better-auth/node";
+import { toNodeHandler, fromNodeHeaders } from "better-auth/node";
 import { seedIfEmpty } from "./db/seed";
 import { isDbEnabled } from "./db/client";
 
