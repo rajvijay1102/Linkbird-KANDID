@@ -1,15 +1,22 @@
+# Netlify config for this repo (SPA + serverless API)
 [build]
   command = "npm run build:client"
-  functions = "netlify/functions"
   publish = "dist/spa"
-
+  functions = "netlify/functions"
 
 [functions]
   external_node_modules = ["express"]
   node_bundler = "esbuild"
-  
+
+# Route API to the Netlify function (serverless Express)
 [[redirects]]
-  force = true
   from = "/api/*"
-  status = 200
   to = "/.netlify/functions/api/:splat"
+  status = 200
+  force = true
+
+# SPA fallback so deep links work (React Router)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
