@@ -22,6 +22,16 @@ export function createServer() {
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 
+  // Session endpoint (explicit)
+  app.get("/api/auth/session", async (req, res) => {
+    try {
+      const session = await auth.api.getSession({ headers: fromNodeHeaders(req.headers) });
+      return res.json(session ?? { user: null });
+    } catch {
+      return res.json({ user: null });
+    }
+  });
+
   // Example API routes
   app.get("/api/ping", (_req, res) => {
     const ping = process.env.PING_MESSAGE ?? "ping";
