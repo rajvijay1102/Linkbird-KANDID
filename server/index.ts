@@ -22,7 +22,9 @@ export function createServer() {
   // Session endpoint (explicit) before mounting Better Auth
   app.get("/api/auth/session", async (req, res) => {
     try {
-      const session = await auth.api.getSession({ headers: fromNodeHeaders(req.headers) });
+      const session = await auth.api.getSession({
+        headers: fromNodeHeaders(req.headers),
+      });
       return res.json(session ?? { user: null });
     } catch {
       return res.json({ user: null });
