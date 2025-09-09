@@ -15,8 +15,8 @@ export function createServer() {
   // CORS first
   app.use(cors());
 
-  // Better Auth catch-all, mounted before JSON body parser
-  app.all("/api/auth/*", toNodeHandler(auth));
+  // Better Auth handler mounted at /api/auth (handles all subpaths)
+  app.use("/api/auth", toNodeHandler(auth));
 
   // Standard body parsers
   app.use(express.json());
