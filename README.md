@@ -114,16 +114,3 @@ await db.select().from(leads).limit(20);
 - Build: pnpm build
 - Start: pnpm start
 
-Production deploy options:
-- Netlify or Vercel via MCP integrations
-  - Netlify: Click [Connect Netlify MCP](#open-mcp-popover) and deploy. Netlify builds source directly.
-  - Vercel: Click [Connect Vercel MCP](#open-mcp-popover). Once connected, deploy automatically.
-- You can also use [Open Preview](#open-preview) for a non-production link.
-
-## Notes on Next.js 15+
-This environment is a Vite + Express project. If you require a Next.js 15+ repository, please connect your own repo or use the VS Code extension/CLI:
-- GitHub repos: https://www.builder.io/c/docs/projects-github
-- Local repos: https://www.builder.io/c/docs/projects-local-repo
-- VS Code: https://www.builder.io/c/docs/projects-vscode
-
-This template reproduces the spec within the current stack and can be migrated to Next.js with the provided schema and auth setup.
